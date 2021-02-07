@@ -1,12 +1,20 @@
 'use strict'
 
 const Record = require('../models/Record')
-const aggregateTopFields = require('../aggregations/aggregateTopFields')
-const aggregateNewFields = require('../aggregations/aggregateNewFields')
-const aggregateRecentFields = require('../aggregations/aggregateRecentFields')
+const aggregateTopRecords = require('../aggregations/aggregateTopRecords')
+const aggregateNewRecords = require('../aggregations/aggregateNewRecords')
+const aggregateRecentRecords = require('../aggregations/aggregateRecentRecords')
 const sortings = require('../constants/sortings')
 
 const get = async (ids, sorting, range, limit, dateDetails) => {
+
+	const aggregation = (() => {
+
+		if (sorting === sortings.SORTINGS_TOP) return aggregateTopRecords(ids, [ 'siteLocation' ], range, limit, dateDetails)
+		if (sorting === sortings.SORTINGS_NEW) return aggregateNewRecords(ids, [ 'siteLocation' ], limit)
+		if (sorting === sortings.SORTINGS_RECENT) return aggregateRecentRecords(ids, [ 'siteLocation' ], limit)
+
+	})()
 
 	const enhance = (entries) => {
 
@@ -17,14 +25,6 @@ const get = async (ids, sorting, range, limit, dateDetails) => {
 		}))
 
 	}
-
-	const aggregation = (() => {
-
-		if (sorting === sortings.SORTINGS_TOP) return aggregateTopFields(ids, [ 'siteLocation' ], range, limit, dateDetails)
-		if (sorting === sortings.SORTINGS_NEW) return aggregateNewFields(ids, [ 'siteLocation' ], limit)
-		if (sorting === sortings.SORTINGS_RECENT) return aggregateRecentFields(ids, [ 'siteLocation' ], limit)
-
-	})()
 
 	return enhance(
 		await Record.aggregate(aggregation)

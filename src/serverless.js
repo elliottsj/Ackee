@@ -1,5 +1,6 @@
 'use strict'
 
+require('ts-tiny-invariant')
 require('graphql-tools')
 
 const { ApolloServer } = require('apollo-server-lambda')

@@ -1,5 +1,7 @@
 'use strict'
 
+require('graphql-tools')
+
 const { ApolloServer } = require('apollo-server-lambda')
 
 const config = require('./utils/config')
